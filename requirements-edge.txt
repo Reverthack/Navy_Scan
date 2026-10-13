@@ -1,0 +1,4 @@
+# Dépendances optionnelles du côté site (détecteur de cibles, vignettes du simulateur).
+# Le hub et les tests du hub n'en ont pas besoin.
+numpy>=1.26
+pillow>=10.0

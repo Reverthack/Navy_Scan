@@ -1,0 +1,73 @@
+{
+  "hub": {
+    "snapshot_max_bytes": 2000000
+  },
+  "ais": {
+    "enabled": true,
+    "udp_host": "0.0.0.0",
+    "udp_port": 10110,
+    "match_radius_m": 500,
+    "max_age_s": 900
+  },
+  "rules": {
+    "confirm_hits": 3,
+    "confirm_window_s": 10,
+    "cooldown_s": 60,
+    "max_speed_mps": 12.0
+  },
+  "ptz": {
+    "enabled": true,
+    "backend": "simulated"
+  },
+  "map": {
+    "provider": "auto",
+    "providers": {
+      "carto": {
+        "tile_url": "https://basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png?key={MAP_TILE_KEY}",
+        "attribution": "&copy; OpenStreetMap contributors &copy; CARTO",
+        "max_zoom": 20,
+        "dark": false,
+        "requires_key": "MAP_TILE_KEY"
+      },
+      "osm": {
+        "tile_url": "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+        "attribution": "&copy; OpenStreetMap contributors",
+        "max_zoom": 19,
+        "dark": true
+      }
+    }
+  },
+  "cameras": [
+    {
+      "id": "cam-sim",
+      "site_id": "site-demo",
+      "name": "Caméra simulée (démo)",
+      "lat": 48.3905,
+      "lon": -4.4861,
+      "kind": "thermique_panoramique",
+      "zone_ids": [],
+      "ptz": true,
+      "enabled": true
+    }
+  ],
+  "sites": {
+    "site-demo": {
+      "name": "Site de démonstration (à remplacer)",
+      "lat": 48.3905,
+      "lon": -4.4861,
+      "zones": [
+        {
+          "id": "zone-plage",
+          "name": "Plage nord",
+          "restricted": true,
+          "polygon": [
+            [48.3950, -4.4900],
+            [48.3950, -4.4850],
+            [48.3985, -4.4850],
+            [48.3985, -4.4900]
+          ]
+        }
+      ]
+    }
+  }
+}

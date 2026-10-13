@@ -1,0 +1,4 @@
+{"site_id": "site-demo", "camera_id": "cam-sim", "timestamp": "2026-10-10T12:00:00+00:00", "track_id": 42, "bearing_deg": 0, "range_m": 600}
+{"site_id": "site-demo", "camera_id": "cam-sim", "timestamp": "2026-10-10T12:00:04+00:00", "track_id": 42, "bearing_deg": 0, "range_m": 600}
+{"site_id": "site-demo", "camera_id": "cam-sim", "timestamp": "2026-10-10T12:00:08+00:00", "track_id": 42, "bearing_deg": 0, "range_m": 600}
+{"site_id": "site-demo", "camera_id": "cam-sim", "timestamp": "2026-10-10T12:00:12+00:00", "track_id": 42, "bearing_deg": 0, "range_m": 600}

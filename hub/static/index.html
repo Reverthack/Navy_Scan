@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Surveillance côtière</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <link rel="stylesheet" href="/static/app-base.css">
+  <link rel="stylesheet" href="/static/app-ext.css">
+  <link rel="stylesheet" href="/static/app-cameras.css">
+  <link rel="stylesheet" href="/static/app-map.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="logo" aria-hidden="true"></span>
+      <div>
+        <h1>Surveillance côtière</h1>
+        <small id="siteName">Chargement…</small>
+      </div>
+    </div>
+    <div class="status">
+      <span class="pill" id="version">v—</span>
+      <span id="liveDot" class="dot" aria-hidden="true"></span>
+      <span id="liveText">Connexion…</span>
+      <span id="clock" class="clock"></span>
+    </div>
+  </header>
+
+  <section class="kpis">
+    <article class="kpi kpi-crit">
+      <span class="kpi-label">Critiques non acquittées</span>
+      <strong id="kCrit">0</strong>
+    </article>
+    <article class="kpi kpi-alert">
+      <span class="kpi-label">Alertes non acquittées</span>
+      <strong id="kAlert">0</strong>
+    </article>
+    <article class="kpi kpi-ais">
+      <span class="kpi-label">Navires actifs (15 min)</span>
+      <strong id="kShips">0</strong>
+    </article>
+    <article class="kpi kpi-cam">
+      <span class="kpi-label">Caméras en ligne</span>
+      <strong id="kCams">0 / 0</strong>
+    </article>
+  </section>
+
+  <main class="layout">
+    <div class="map-wrap">
+      <div id="map" role="region" aria-label="Carte de surveillance"></div>
+      <div id="mapNotice" class="map-notice" role="alert" hidden></div>
+      <ul class="legend">
+        <li><i class="sw sw-crit"></i>Zone restreinte</li>
+        <li><i class="sw sw-zone"></i>Zone surveillée</li>
+        <li><i class="sw sw-cam"></i>Caméra en ligne</li>
+        <li><i class="sw sw-cam-off"></i>Caméra hors ligne / désactivée</li>
+        <li><i class="sw sw-ship"></i>Navire AIS récent</li>
+        <li><i class="sw sw-target"></i>Alarme non acquittée</li>
+      </ul>
+    </div>
+
+    <aside class="side">
+      <section class="panel">
+        <header class="panel-head">
+          <h2>Alarmes</h2>
+          <select id="filter" aria-label="Filtrer les alarmes">
+            <option value="all">Toutes</option>
+            <option value="open">Non acquittées</option>
+          </select>
+        </header>
+        <ul id="alarms" class="list"></ul>
+      </section>
+
+      <section class="panel panel-small">
+        <header class="panel-head">
+          <h2>Caméras</h2>
+          <button id="addCamera" class="btn primary small" type="button">+ Ajouter</button>
+        </header>
+        <ul id="cameras" class="list compact"></ul>
+      </section>
+
+      <section class="panel panel-small">
+        <header class="panel-head">
+          <h2>Navires AIS</h2>
+          <input id="search" type="search" placeholder="Nom ou MMSI" aria-label="Rechercher un navire">
+        </header>
+        <p id="aisStatus" class="ais-status"></p>
+        <ul id="vessels" class="list compact"></ul>
+      </section>
+
+      <section class="panel panel-small">
+        <header class="panel-head">
+          <h2>Pilotage PTZ</h2>
+        </header>
+        <ul id="ptz" class="list compact"></ul>
+      </section>
+    </aside>
+  </main>
+
+  <dialog id="keyDialog" class="dialog">
+    <form method="dialog">
+      <h3>Clé API requise</h3>
+      <p id="keyReason">Cette action modifie les données du hub. Saisir la clé du hub.</p>
+      <input id="keyInput" type="password" autocomplete="off" aria-label="Clé API">
+      <menu>
+        <button value="cancel" class="btn ghost">Annuler</button>
+        <button value="ok" class="btn primary">Valider</button>
+      </menu>
+    </form>
+  </dialog>
+
+  <dialog id="cameraDialog" class="dialog dialog-wide">
+    <form id="cameraForm" autocomplete="off">
+      <h3 id="cameraTitle">Nouvelle caméra</h3>
+      <p class="muted">Une caméra doit être déclarée avant que ses détections soient acceptées.</p>
+
+      <div class="form-grid">
+        <label>Identifiant
+          <input name="id" required maxlength="40" pattern="[A-Za-z0-9_-]{1,40}"
+                 title="Lettres, chiffres, tirets et tirets bas (40 caractères max)">
+        </label>
+        <label>Nom
+          <input name="name" required maxlength="80">
+        </label>
+        <label>Site
+          <select name="site_id" required></select>
+        </label>
+        <label>Type
+          <select name="kind">
+            <option value="thermique_panoramique">Thermique panoramique 360°</option>
+            <option value="thermique_ptz">Thermique PTZ</option>
+            <option value="bullet_thermique">Bullet thermique</option>
+            <option value="visible_ptz">Visible PTZ</option>
+          </select>
+        </label>
+        <label>Latitude
+          <input name="lat" type="number" step="0.000001" min="-90" max="90" required>
+        </label>
+        <label>Longitude
+          <input name="lon" type="number" step="0.000001" min="-180" max="180" required>
+        </label>
+      </div>
+
+      <fieldset class="zones">
+        <legend>Zones couvertes <span class="muted">(aucune coché = toutes les zones du site)</span></legend>
+        <div id="zoneChecks" class="zone-checks"></div>
+      </fieldset>
+
+      <div class="form-checks">
+        <label class="check"><input type="checkbox" name="ptz"> Pilotage PTZ (orientation vers la cible)</label>
+        <label class="check"><input type="checkbox" name="enabled" checked> Caméra activée</label>
+      </div>
+
+      <p id="cameraError" class="form-error" role="alert"></p>
+
+      <menu class="dialog-actions">
+        <button type="button" id="cameraDelete" class="btn danger">Supprimer</button>
+        <span class="spacer"></span>
+        <button type="button" id="cameraCancel" class="btn ghost">Annuler</button>
+        <button type="submit" class="btn primary">Enregistrer</button>
+      </menu>
+    </form>
+  </dialog>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="/static/app.js"></script>
+</body>
+</html>

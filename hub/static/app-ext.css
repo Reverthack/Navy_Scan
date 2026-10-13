@@ -1,0 +1,102 @@
+/* Extensions v3 : vignettes, indicateurs, pilotage PTZ, version. */
+
+.pill {
+  font-size: 11px;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.panel-small { flex: 0 0 auto; }
+.panel-small .list { max-height: 200px; }
+
+.sw-target {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid var(--crit);
+  background: transparent;
+}
+
+.item-body {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+}
+
+.item-body.with-thumb { grid-template-columns: 96px 1fr; }
+
+.thumb {
+  width: 96px;
+  height: 72px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: #05080f;
+  cursor: zoom-in;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.chip {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 6px;
+  background: rgb(148 163 184 / .12);
+  color: var(--muted);
+}
+
+.chip-warn { background: rgb(245 158 11 / .18); color: #fcd34d; }
+.chip-crit { background: rgb(239 68 68 / .18); color: #fca5a5; }
+
+.ptz-item {
+  padding: 9px 12px;
+  margin: 2px 0;
+  border-radius: 8px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.ptz-item strong { color: var(--text); font-weight: 550; }
+
+.pulse {
+  animation: pulse 1.6s ease-out infinite;
+}
+
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 rgb(239 68 68 / .5); }
+  100% { box-shadow: 0 0 0 14px rgb(239 68 68 / 0); }
+}
+
+.site-icon-target {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 2px solid var(--crit);
+  background: rgb(239 68 68 / .25);
+}
+
+@media (max-width: 600px) {
+  .item-body.with-thumb { grid-template-columns: 72px 1fr; }
+  .thumb { width: 72px; height: 54px; }
+}
+
+/* État de l'écoute AIS, sous le titre du panneau Navires. */
+.ais-status {
+  margin: 0;
+  padding: 8px 14px;
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--muted);
+  border-bottom: 1px solid var(--border);
+}
+.ais-status.warn { color: #fbbf24; }
+.ais-status.crit { color: #f87171; }
